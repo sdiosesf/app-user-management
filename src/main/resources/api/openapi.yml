@@ -1,0 +1,269 @@
+openapi: 3.0.1
+info:
+  title: API User Management V1
+  description: API for managing users.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8082/api/v1
+    description: Application User Management
+tags:
+  - name: User Management
+    description: User Management Controller
+    x-atlas-circuit-breaker: cb-app-user-management
+paths:
+  /users:
+    get:
+      tags:
+        - User Management
+      summary: Retrieve all users
+      parameters:
+        - $ref: '#/components/parameters/Authorization'
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+        '500':
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+    post:
+      tags:
+        - User Management
+      summary: Create a new user
+      parameters:
+        - $ref: '#/components/parameters/Authorization'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '201':
+          description: User successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '500':
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+  /users/{id}:
+    get:
+      tags:
+        - User Management
+      summary: Retrieve a user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/Authorization'
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '500':
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+    put:
+      tags:
+        - User Management
+      operationId: updateUserById
+      summary: Update a user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/Authorization'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '200':
+          description: User successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '500':
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+    delete:
+      tags:
+        - User Management
+      operationId: deleteUserById
+      summary: Delete a user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/Authorization'
+      responses:
+        '204':
+          description: User successfully deleted
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+        '500':
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+components:
+  parameters:
+    Authorization:
+      name: Authorization
+      in: header
+      description: Token de Authorizacion
+      required: true
+      schema:
+        type: string
+  schemas:
+    UserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Mario Dioses Fernandez"
+          maxLength: 50
+          minLength: 1
+        email:
+          type: string
+          maxLength: 70
+          minLength: 1
+          pattern: ^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]+$
+          example: "sdiosesf@bci.cl"
+        password:
+          type: string
+          maxLength: 20
+          minLength: 1
+          example: "1q2w3e4r"
+        phones:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhoneRequest'
+    PhoneRequest:
+      type: object
+      properties:
+        number:
+          type: string
+          minLength: 7
+          maxLength: 9
+          pattern: ^[0-9]+$
+          example: "951693606"
+        cityCode:
+          type: string
+          maxLength: 2
+          pattern: ^[0-9]+$
+          example: "58"
+        countryCode:
+          type: string
+          maxLength: 3
+          pattern: ^[0-9]+$
+          example: "56"
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        name:
+          type: string
+          example: "Mario Dioses Fernandez"
+        email:
+          type: string
+          example: "sdiosesf@bci.cl"
+        password:
+          type: string
+          example: "1q2w3e4r"
+        phones:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhoneResponse'
+        created:
+          type: string
+          example: "2025-04-14T12:08:20.509-0400"
+        modified:
+          type: string
+          example: "2025-04-14T12:08:20.509-0400"
+        lastLogin:
+          type: string
+          example: "2025-04-14T12:08:20.509-0400"
+        isActive:
+          type: boolean
+          example: true
+    PhoneResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        number:
+          type: string
+          example: "951693606"
+        cityCode:
+          type: string
+          example: "58"
+        countryCode:
+          type: string
+          example: "56"
+    ApiException:
+      title: ApiException
+      type: object
+      properties:
+        code:
+          type: string
+          description: Microservice error code
+          example: "0001"
+        description:
+          type: string
+          description: Microservice error description
+          example: "Error calling the service"
+        errorType:
+          type: string
+          description: Microservice error type
+          example: "TECHNICAL"
