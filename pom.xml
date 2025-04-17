@@ -43,7 +43,7 @@
 			**/com/services/application/usermanagement/controller/**
 			**/com/services/application/usermanagement/util/**
 		</sonar.coverage.exclusions>
-		<coverage.minimun>0.0</coverage.minimun>
+		<coverage.minimun>0.9</coverage.minimun>
 	</properties>
 
 	<dependencies>
