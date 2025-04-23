@@ -30,7 +30,6 @@
 	</developers>
 
 	<properties>
-		<server.resource>externalattempts</server.resource>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>11</java.version>
 		<sonar.coverage.exclusions>
