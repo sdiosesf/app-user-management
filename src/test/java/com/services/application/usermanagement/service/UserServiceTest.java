@@ -4,6 +4,7 @@ import static org.mockito.Mockito.*;
 
 import com.services.application.usermanagement.exception.CustomException;
 import com.services.application.usermanagement.mapper.UserMapper;
+import com.services.application.usermanagement.mapper.impl.UserMapperImpl;
 import com.services.application.usermanagement.model.dto.PhoneDto;
 import com.services.application.usermanagement.model.dto.UserDto;
 import com.services.application.usermanagement.model.entity.Phone;
@@ -17,7 +18,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -38,8 +38,7 @@ class UserServiceTest {
   private PasswordUtil passwordUtil;
 
   @Spy
-  private UserMapper userMapper =
-            Mappers.getMapper(UserMapper.class);
+  private UserMapper userMapper = new UserMapperImpl();
 
   @InjectMocks
   private UserServiceImpl userService;
@@ -162,6 +161,8 @@ class UserServiceTest {
 
     when(userRepository.save(any())).thenReturn(createSampleUser());
 
+    when(phoneRepository.save(any())).thenReturn(createSamplePhone());
+
     var testObserver = userService.createUser(userdto).test();
 
     testObserver.awaitTerminalEvent();
@@ -182,6 +183,8 @@ class UserServiceTest {
     when(passwordUtil.encryptPassword(any())).thenReturn("$2a$10$AkPVjkiTcd/ZQx9avzVL7aBtq");
 
     when(userRepository.save(any())).thenReturn(createSampleUser());
+
+    when(phoneRepository.save(any())).thenReturn(createSamplePhone());
 
     var testObserver = userService.updateUser(userdto).test();
 
